@@ -13,23 +13,22 @@ type PWService struct {
 	svc secretsmanageriface.SecretsManagerAPI
 }
 
-func NewPWService() *PWService {
+func NewPWService() PWService {
 	sess, err := session.NewSession()
 	if err != nil {
 		panic(err)
 	}
 	s := secretsmanager.New(sess)
-	return &PWService{svc: s}
+	return PWService{svc: s}
 }
 
-func (p *PWService) GetPassword(pa *Password.Passwd) (*string, error) {
+func (p *PWService) GetPassword(pa Password.Passwd) ([]byte, error) {
 	input := secretsmanager.GetSecretValueInput{
-		SecretId:     aws.String(pa.Name),
+		SecretId: aws.String(pa.Name),
 	}
-	ov , err := p.svc.GetSecretValue(&input)
+	ov, err := p.svc.GetSecretValue(&input)
 	if err != nil {
 		return nil, err
 	}
-
-	return ov.SecretString, nil
+	return ov.SecretBinary, nil
 }

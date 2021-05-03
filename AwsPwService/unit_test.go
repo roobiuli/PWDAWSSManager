@@ -1,13 +1,15 @@
 package AwsPwService
 
 import (
+	"os"
+	"testing"
+
+	"github.com/roobiuli/PWDKMREP/Common"
 	"github.com/roobiuli/PWDKMREP/Password"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-
-func TestPasswdGather(t *testing.T)  {
+func TestPasswdGather(t *testing.T) {
 	asserts := assert.New(t)
 
 	Sm := &PWService{
@@ -15,7 +17,7 @@ func TestPasswdGather(t *testing.T)  {
 	}
 
 	PW := Password.Passwd{
-		Name:  "TestPass",
+		Name: "TestPass",
 	}
 
 	data, err := Sm.GetPassword(PW)
@@ -24,6 +26,29 @@ func TestPasswdGather(t *testing.T)  {
 
 	//asserts.IsType(secretsmanager.GetSecretValueOutput{}, data, "Returned data should be GetSecretValueOutput")
 
-	asserts.Equal("MockedPasswd", data, "ShouldBe the mocked password")
+	asserts.Equal([]byte("MockedPasswd"), data, "ShouldBe the mocked password")
+
+}
+
+func TestWithRealService(t *testing.T) {
+	asserts := assert.New(t)
+
+	// Seting Rand Password
+
+	os.Setenv("PastauTest", "replaceme")
+
+	// Test password
+
+	EVars := Common.FindVars("replaceme")
+
+	PasServ := NewPWService()
+
+	PassP := &Common.PassProcessor{}
+
+	PassP.WithPassColletion(EVars).WithSecretManager(PasServ)
+
+	if !PassP.IsNext() {
+		PassP.ProcessPassword()
+	}
 
 }

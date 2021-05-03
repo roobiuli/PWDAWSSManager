@@ -12,20 +12,19 @@ type Iterat interface {
 
 type PassProcessor struct {
 	index int
-	Pws []*Password.Passwd
-	SM *AwsPwService.PWService
+	Pws   []Password.Passwd
+	SM    AwsPwService.PWService
 }
 
-func (p *PassProcessor) WithSecretManager(s *AwsPwService.PWService) *PassProcessor {
+func (p *PassProcessor) WithSecretManager(s AwsPwService.PWService) *PassProcessor {
 	p.SM = s
 	return p
 }
 
-func (p *PassProcessor) WithPassColletion(c []*Password.Passwd) *PassProcessor {
+func (p *PassProcessor) WithPassColletion(c []Password.Passwd) *PassProcessor {
 	p.Pws = c
 	return p
 }
-
 
 func (p *PassProcessor) IsNext() bool {
 	if p.index < len(p.Pws) {
@@ -34,16 +33,11 @@ func (p *PassProcessor) IsNext() bool {
 	return false
 }
 
-func (p *PassProcessor) ProcessPassword()  {
-		pa := p.Pws[p.index]
-		data, _ := p.SM.GetPassword(pa)
+func (p *PassProcessor) ProcessPassword() {
+	pa := p.Pws[p.index]
+	data, _ := p.SM.GetPassword(pa)
 
-		pa.WithPass(data).SetEnv()
-		p.index++
+	pa.WithPass(data).SetEnv()
+	p.index++
 
 }
-
-
-
-
-
